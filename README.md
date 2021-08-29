@@ -22,3 +22,6 @@ In addition to that you have to configure two things:
     - password: `secret`
     - database: `fed_address`
     - _Note that this can be changed by adjusting your `application.yml`_
+
+# License
+This project can be built upon under the conditions of the [MIT License](https://github.com/DieKautz/stellar-federation-server/blob/master/LICENSE).
