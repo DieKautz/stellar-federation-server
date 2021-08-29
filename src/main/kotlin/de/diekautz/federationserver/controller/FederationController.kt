@@ -42,7 +42,7 @@ class FederationController(private val service: FederationService) {
         return service.getAddresses()
     }
 
-    @PostMapping("/edit")
+    /*@PostMapping("/edit")
     fun createFedAddr(@RequestBody address: FederationAddress): FederationAddress = service.createFedAddress(address)
 
     @PutMapping("/edit")
@@ -54,5 +54,5 @@ class FederationController(private val service: FederationService) {
     fun deleteFedAddr(@PathVariable addr: String): ResponseEntity<Any?> {
         service.deleteFedAddress(addr)
         return ResponseEntity("{\"success\":\"Federation address successfully deleted!\"}", HttpStatus.NO_CONTENT)
-    }
+    }*/
 }
