@@ -5,7 +5,6 @@ import de.diekautz.federationserver.controller.SessionType.*
 import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
 import de.diekautz.federationserver.datasource.FederationAddressDataSource
 import de.diekautz.federationserver.model.FederationAddress
-import de.diekautz.federationserver.model.MemoType
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
@@ -75,7 +74,7 @@ class FrontendController(
         }
         var fedAddress = dataSource.findAddress("${username}*${fedConfig.domain}")
         if (fedAddress == null) {
-            fedAddress = FederationAddress("${username}*${fedConfig.domain}", "Blah123", MemoType.TEXT, "Hello")
+            fedAddress = FederationAddress("${username}*${fedConfig.domain}", "")
         }
         model["fedAddress"] = fedAddress
 
