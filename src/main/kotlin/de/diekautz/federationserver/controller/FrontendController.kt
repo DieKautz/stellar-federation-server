@@ -71,7 +71,7 @@ class FrontendController(
             DISCORD -> {
                 model["endpoint"] = "/api/discord"
             }
-            GITHUB -> TODO()
+            else -> {}
         }
         var fedAddress = dataSource.findAddress("${username}*${fedConfig.domain}")
         if (fedAddress == null) {
