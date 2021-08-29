@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.diekautz"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -17,11 +17,14 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web:2.5.4")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.springframework.boot:spring-boot-starter-web:2.5.4")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.5.4")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.4")
+
+	runtimeOnly("mysql:mysql-connector-java:8.0.25")
 
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:2.5.4")
 
