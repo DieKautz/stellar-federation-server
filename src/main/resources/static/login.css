@@ -1,0 +1,37 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    align-items: center;
+}
+
+.main-center {
+    text-align: center;
+}
+
+.main-center h3 {
+    margin-top: 2em;
+}
+
+.main-center .discord, .main-center .github {
+    margin: 1em;
+}
+
+.discord {
+    background-color: #5865F2 !important;
+}
+.discord:hover {
+    background-color: #6f7af1;
+    box-shadow: #6f7af1 0 0 10px;
+}
+
+.github {
+    background-color: #777 !important;
+}
+.github:hover {
+    background-color: #999;
+    box-shadow: #999 0 0 15px;
+}

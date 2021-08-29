@@ -1,0 +1,6 @@
+oauth2:
+    discord:
+        client:
+            id: "<client id goes here>"
+            secret: "<secret client key here>"
+stellar.federation.domain: "ssfs.diekautz.dev"
