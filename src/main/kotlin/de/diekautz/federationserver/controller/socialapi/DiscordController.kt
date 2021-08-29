@@ -30,7 +30,7 @@ class DiscordController (
     private val fedConfig: FederationConfiguration,
     @Autowired private val restTemplate: RestTemplate
     ) {
-    private val callbackUri = "http://localhost:8080/api/discord/callback"
+    private val callbackUri = "https://${fedConfig.domain}/api/discord/callback"
 
     @GetMapping("/login")
     fun redirectDiscordLogin() =
