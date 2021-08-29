@@ -90,6 +90,11 @@ class DiscordController (
         val fedAddress = "${user.username}#${user.discriminator}*${fedConfig.domain}"
         dataSource.deleteAddr(fedAddress)
         println("Deleting $fedAddress")
+
+        session.removeAttribute("discordUser")
+        session.removeAttribute("id")
+        session.removeAttribute("type")
+        session.removeAttribute("discordUser")
         session.invalidate()
         return ResponseEntity.ok("deleted")
     }
