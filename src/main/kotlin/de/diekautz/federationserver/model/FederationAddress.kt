@@ -11,7 +11,7 @@ data class FederationAddress(
     val stellarAddress: String,
 
     @JsonProperty("account_id")
-    val accountID: String,
+    val accountId: String,
 
     @JsonProperty("memo_type")
     val memoType: MemoType = MemoType.NONE,

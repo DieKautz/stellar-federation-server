@@ -45,7 +45,7 @@ class FederationService(private val dataSource: FederationAddressDataSource) {
 
 
     private fun validateAddress(address: FederationAddress) {
-        if (!address.stellarAddress.isValidFedAddress() || !address.accountID.isValidPubKey()) {
+        if (!address.stellarAddress.isValidFedAddress() || !address.accountId.isValidPubKey()) {
             throw IllegalArgumentException("Address or account id invalid!")
         }
         if (address.memoType == MemoType.NONE) {

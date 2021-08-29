@@ -26,7 +26,7 @@ internal class MockFederationAddressDataSourceTest {
         //then
         assertThat(accs)
             .allSatisfy { it ->
-                assertThat(it.accountID).isNotEmpty
+                assertThat(it.accountId).isNotEmpty
                 assertThat(it.stellarAddress).isNotEmpty
             }
     }
