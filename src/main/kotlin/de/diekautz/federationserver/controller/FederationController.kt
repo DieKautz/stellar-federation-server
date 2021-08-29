@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
+import java.io.File
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/federation")
+@RequestMapping
 class FederationController(private val service: FederationService) {
+    private val tomlContent = File("src/main/resources/stellar.toml").readLines()
 
     @ExceptionHandler(NoSuchElementException::class)
     fun handleNotFound(e: NoSuchElementException): ResponseEntity<String> =
@@ -24,7 +26,7 @@ class FederationController(private val service: FederationService) {
     fun handleEx(e: MissingServletRequestParameterException): ResponseEntity<String> =
         ResponseEntity("{\"error\":\"${e.message}\"}", HttpStatus.BAD_REQUEST)
 
-    @GetMapping
+    @GetMapping("/federation")
     fun getFedAddr(@RequestParam("type") type: String, @RequestParam("q") query: String, response: HttpServletResponse): FederationAddress {
         when(type) {
             "name" -> {
@@ -37,9 +39,16 @@ class FederationController(private val service: FederationService) {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/federation/all")
     fun getAll(): Collection<FederationAddress> {
         return service.getAddresses()
+    }
+
+    @GetMapping("/.well-known/stellar.toml")
+    fun serveStellarToml(response: HttpServletResponse) {
+        response.setHeader("Access-Control-Allow-Origin", "*")
+        response.contentType = "text/plain"
+        response.outputStream.print(tomlContent.joinToString("\n"))
     }
 
     /*@PostMapping("/edit")

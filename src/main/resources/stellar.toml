@@ -1,0 +1,15 @@
+# Federation service provided by DieKautz' Stellar Social Federation Service
+NETWORK_PASSPHRASE="Public Global Stellar Network ; September 2015"
+FEDERATION_SERVER="https://ssfs.diekautz.dev/federation/"
+
+ACCOUNTS=[
+"GBBOANVSTNYZGSQONJW4YRF2Z3Q4WSRSDMQEZGVGE7JCK2543KXUGLSX"
+]
+
+[DOCUMENTATION]
+ORG_NAME="DieKautz ORGA"
+ORG_URL="https://diekautz.dev"
+ORG_LOGO="https://diekautz.dev/logo_128.png"
+
+ORG_GITHUB="DieKautz"
+ORG_KEYBASE="DieKautz"
