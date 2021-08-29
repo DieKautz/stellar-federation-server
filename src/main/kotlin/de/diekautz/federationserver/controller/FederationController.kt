@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping
 class FederationController(private val service: FederationService) {
-    private val tomlContent = File("src/main/resources/stellar.toml").readLines()
+    private val tomlContent = this.javaClass.classLoader.getResource("stellar.toml").readText()
 
     @ExceptionHandler(NoSuchElementException::class)
     fun handleNotFound(e: NoSuchElementException): ResponseEntity<String> =
@@ -48,7 +48,7 @@ class FederationController(private val service: FederationService) {
     fun serveStellarToml(response: HttpServletResponse) {
         response.setHeader("Access-Control-Allow-Origin", "*")
         response.contentType = "text/plain"
-        response.outputStream.print(tomlContent.joinToString("\n"))
+        response.outputStream.print(tomlContent)
     }
 
     /*@PostMapping("/edit")
