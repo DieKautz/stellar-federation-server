@@ -12,6 +12,7 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import org.springframework.web.servlet.view.RedirectView
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -40,12 +41,18 @@ class FrontendController(
     }
 
     @GetMapping("/login")
-    fun serveLoginPage(model: Model, session: HttpSession): String {
+    fun serveLoginPage(model: Model, session: HttpSession, request: HttpServletRequest, redirAttr: RedirectAttributes): String {
         if (session.getAttribute("id") == null) {
             session.setAttribute("id", UUID.randomUUID().toString())
             session.setAttribute("type", NONE)
         } else if (session.getAttribute("type") as SessionType != NONE) {
             return "redirect:/dashboard"
+        }
+        if (redirAttr.containsAttribute("error")) {
+            model["error"] = redirAttr.getAttribute("error")!!
+        }
+        if (redirAttr.containsAttribute("success")) {
+            model["success"] = redirAttr.getAttribute("success")!!
         }
         return "login"
     }
@@ -55,11 +62,11 @@ class FrontendController(
         log.debug("Logout requested for session: ${session.id}")
         session.invalidate()
         model["success"] = "Log out successful!"
-        return "redirect:/login"
+        return "login"
     }
 
     @GetMapping("/dashboard")
-    fun serveDashboard(model: Model, session: HttpSession, request: HttpServletRequest): String {
+    fun serveDashboard(model: Model, session: HttpSession, request: HttpServletRequest, redirAttr: RedirectAttributes): String {
         if (session.getAttribute("id") == null || session.getAttribute("type") as SessionType == NONE) {
             return "redirect:/login"
         }
@@ -81,11 +88,11 @@ class FrontendController(
         }
         model["fedAddress"] = fedAddress
 
-        if (request.getParameter("saved") != null){
-            model["success"] = "Federation Address updated successfully!"
+        if (redirAttr.containsAttribute("error")) {
+            model["error"] = redirAttr.getAttribute("error")!!
         }
-        if (request.getParameter("error") != null){
-            model["error"] = request.getParameter("error")
+        if (redirAttr.containsAttribute("success")) {
+            model["success"] = redirAttr.getAttribute("success")!!
         }
         return "dashboard"
     }

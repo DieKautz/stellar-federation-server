@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.exchange
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import org.springframework.web.servlet.view.RedirectView
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -31,16 +32,20 @@ class DiscordController(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleBadRequest(e: IllegalArgumentException): RedirectView = RedirectView("/dashboard?error=${e.message}")
+    fun handleBadRequest(e: IllegalArgumentException, redirAttr: RedirectAttributes): RedirectView {
+        redirAttr.addFlashAttribute("error", e.message)
+        return RedirectView("/dashboard")
+    }
 
     @GetMapping("/login")
     fun redirectDiscordLogin() =
         RedirectView("https://discordapp.com/api/oauth2/authorize?client_id=${discordConfig.id}&scope=identify&response_type=code&redirect_uri=${discordConfig.callbackUrl}")
 
     @GetMapping("/callback")
-    fun handleCallback(request: HttpServletRequest, session: HttpSession): RedirectView {
+    fun handleCallback(request: HttpServletRequest, session: HttpSession, redirAttr: RedirectAttributes): RedirectView {
         if (request.getParameter("code") == null) {
-            throw IllegalStateException("Discord Authorization failed!")
+            redirAttr.addFlashAttribute("error", "Discord Authorization failed!")
+            return RedirectView("/login")
         }
         val code = request.getParameter("code")!!
 
@@ -60,13 +65,14 @@ class DiscordController(
             log.debug("Authenticated Discord user ${user.body?.username}#${user.body?.discriminator} (${user.body?.id})")
         } catch (ex: Exception) {
             session.invalidate()
-            throw IllegalStateException("Discord Authorization failed!")
+            redirAttr.addFlashAttribute("error", "Discord Authorization failed!")
+            return RedirectView("/login")
         }
         return RedirectView("/dashboard")
     }
 
     @PostMapping("/my")
-    fun updateOwnAddress(request: HttpServletRequest, session: HttpSession): RedirectView {
+    fun updateOwnAddress(request: HttpServletRequest, session: HttpSession, redirAttr: RedirectAttributes): RedirectView {
         if (session.getAttribute("discordUser") == null) {
             return RedirectView("/dashboard")
         }
@@ -75,7 +81,7 @@ class DiscordController(
 
         val accountID = request.getParameter("account_id")
         val memoType = MemoType.valueOf(request.getParameter("memo_type"))
-        val memo = if(memoType!=MemoType.NONE) request.getParameter("memo") else null
+        val memo = if(memoType!=MemoType.NONE) request.getParameter("memo").trim() else null
 
         val federationAddress = FederationAddress(stellarAddress, accountID, memoType, memo)
 
@@ -83,7 +89,8 @@ class DiscordController(
 
         log.debug("Updating discord fed address for ${user.username}#${user.discriminator} (${user.id}) to $federationAddress")
 
-        return RedirectView("/dashboard?saved")
+        redirAttr.addFlashAttribute("success", "Discord Federation Address saved!")
+        return RedirectView("/dashboard")
     }
 
     @PostMapping("/delete")
