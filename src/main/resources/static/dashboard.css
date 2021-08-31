@@ -3,6 +3,11 @@ body {
     height: 100%;
 }
 
+body {
+    background: rgb(32,64,162);
+    background: linear-gradient(131deg, rgba(32,64,162,1) 0%, rgba(65,105,225,1) 35%, rgb(84, 108, 179) 100%);
+}
+
 nav {
     border-radius: 0 0 1em 1em;
 }
@@ -32,4 +37,15 @@ main {
     background-color: transparent !important;
     color: #a00 !important;
     text-shadow: 0 0 50px #aaa;
+}
+
+#inputPublicKey {
+    font-size: .9em;
+    font-family: monospace;
+}
+
+#toggleMemoBtn {
+    line-height: 2.5rem;
+    text-align: center;
+    font-size: .8em;
 }

@@ -46,68 +46,76 @@
 <main class="flex-shrink-0">
     
    <div class="container h-100">
-        <h2 class="mb-4">Edit your Discord Federation Address:</h2>
-
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <!-- <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
             <strong class="me-1">Ok!</strong><span th:text="${success}">:)</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong class="me-1">Something went wrong!</strong><span th:text="${error}">:(</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div> -->
+        
+        <div class="row justify-content-center">
+            <div class="card text-dark bg-light col-sm-9 p-0 border-0">
+                <div class="card-body">
+                    <h2 class="card-title mb-3 text-center">Your Discord Stellar Federation Address:</h2>
+                    <p th:text="${fedAddress.stellarAddress}" class="card-text text-center font-monospace bg-secondary text-light fs-5 p-2">Discord#1234*example.name</p>
+
+                    <form method="post" th:attr="action=${endpoint}+'/my'">
+                        <input type="hidden" name="stellar_address" value="">
+                        <div class="row mb-5">
+                            <label for="inputPublicKey" class="col-md-3 col-form-label">Linked Public Key:</label>
+                            <div class="col-md-9 position-relative">
+                                <input type="text" class="form-control" id="inputPublicKey"
+                                    pattern="[A-Z2-7]{56}" placeholder="G.." aria-label="Stellar Public Key Address"
+                                    th:attr="value=${fedAddress.accountId}" required
+                                    name="account_id"
+                                    >
+                                <div class="invalid-tooltip">
+                                    Seems to be invalid.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3 justify-content-center">
+                            <div class="col-md-3 collapse" id="collapseMemo">
+                                <select class="form-select" name="memo_type" id="inputMemoType">
+                                    <option th:each="type : ${T(de.diekautz.federationserver.model.MemoType).values()}"
+                                            th:value="${type}" th:text="${type.displayValue}"
+                                            th:attr="selected=${type.displayValue==fedAddress.memoType.displayValue} ? 'true' : 'false'"
+                                    ></option>
+                                </select>
+                            </div>
+                            <div class="col-md-7 collapse" id="collapseMemo">
+                                <input th:attr="value=${fedAddress.memo}" type="text" name="memo" class="form-control" id="inputMemo" placeholder="Probably empty for you">
+                            </div>
+                            <div class="col-lg-2">
+                                <a class="link-secondary w-100 p-0" id="toggleMemoBtn" data-bs-toggle="collapse" href="#collapseMemo" role="button" aria-expanded="false" aria-controls="collapseMemo">
+                                    show Memo
+                                </a>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-outline-primary">Save</button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                  Danger
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-lg-end bg-danger">
+                                  <li><a class="dropdown-item delete" href="#" th:attr="onclick='requestDelete(\''+${endpoint}+'\');'">Delete this record permanently</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div th:if="${success}" class="card-footer bg-success text-white">
+                    <small th:text="${success}">Success!</small>
+                </div>
+                <div th:if="${error}" class="card-footer bg-danger text-white">
+                    <strong class="me-1">Error!</strong><small th:text="${error}">Last updated 3 mins ago</small>
+                </div>
+            </div>
         </div>
-        <form method="post" th:attr="action=${endpoint}+'/my'">
-            <div class="row g-3 text-dark justify-content-center">
-                <div class="col-md-4">
-                    <div class="form-floating">
-                        <input th:attr="value=${fedAddress.stellarAddress}" type="text" class="form-control" name="stellar_address" id="stellar_address" disabled >
-                        <label for="stellar_address">Your Federation Address</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input th:attr="value=${fedAddress.accountId}" type="text" class="form-control required" name="account_id" id="account_id" required>
-                        <label for="account_id">Your Stellar Public Key</label>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="row g-3 text-dark justify-content-center">
-                <div class="col-lg-2">
-                    <div class="form-floating">
-                        <select class="form-select" name="memo_type" id="floatingSelectGrid" aria-label="Floating label select example" required>
-                            <option th:each="type : ${T(de.diekautz.federationserver.model.MemoType).values()}"
-                                    th:value="${type}" th:text="${type.displayValue}"
-                                    th:attr="selected=${type.displayValue==fedAddress.memoType.displayValue} ? 'true' : 'false'"
-                            ></option>
-                        </select>
-                        <label for="floatingSelectGrid">Memo Type</label>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="form-floating">
-                        <input th:attr="value=${fedAddress.memo}" type="text" class="form-control" name="memo" id="memo" placeholder="Probably empty for you">
-                        <label for="memo">Memo</label>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-3 row">
-                <div class="col-sm-5"></div>
-                <div class="col-sm-2 justify-content-center mb-5">
-                    <button type="submit" class="btn btn-outline-light w-100">Save</button>
-                </div>
-                <div class="col-sm-5">
-                    <div class="btn-group float-end">
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                          Danger
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-lg-end bg-danger">
-                          <li><a class="dropdown-item delete" href="#" th:attr="onclick='requestDelete(\''+${endpoint}+'\');'">Delete this record permanently</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </form>
         
    </div>
  </main>
