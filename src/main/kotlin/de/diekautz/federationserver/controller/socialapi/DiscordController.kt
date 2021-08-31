@@ -5,9 +5,9 @@ import de.diekautz.federationserver.config.FederationConfiguration
 import de.diekautz.federationserver.controller.SessionType
 import de.diekautz.federationserver.controller.socialapi.dto.DiscordTokenResponse
 import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
-import de.diekautz.federationserver.datasource.FederationAddressDataSource
 import de.diekautz.federationserver.model.FederationAddress
 import de.diekautz.federationserver.model.MemoType
+import de.diekautz.federationserver.service.FederationService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
@@ -24,12 +24,12 @@ import javax.servlet.http.HttpSession
 
 @RestController
 @RequestMapping("/api/discord")
-class DiscordController (
+class DiscordController(
     private val discordConfig: DiscordClientConfiguration,
-    private val dataSource: FederationAddressDataSource,
+    private val service: FederationService,
     private val fedConfig: FederationConfiguration,
     @Autowired private val restTemplate: RestTemplate
-    ) {
+) {
 
     @GetMapping("/login")
     fun redirectDiscordLogin() =
@@ -75,19 +75,19 @@ class DiscordController (
         val memo = request.getParameter("memo")
 
         val federationAddress = FederationAddress(stellarAddress, accountID, memoType, memo)
-        if(!dataSource.updateAddr(federationAddress)) {
-            dataSource.createAddr(FederationAddress(stellarAddress, accountID, memoType, memo))
-        }
+
+        service.updateFedAddress(federationAddress)
+
         println("Updating $stellarAddress")
 
-        return(RedirectView("/dashboard?saved"))
+        return RedirectView("/dashboard?saved")
     }
 
     @PostMapping("/delete")
     fun deleteOwnAddress(session: HttpSession): ResponseEntity<String> {
         val user = session.getAttribute("discordUser") as DiscordUser
         val fedAddress = "${user.username}#${user.discriminator}*${fedConfig.domain}"
-        dataSource.deleteAddr(fedAddress)
+        service.deleteFedAddress(fedAddress)
         println("Deleting $fedAddress")
 
         session.removeAttribute("discordUser")
@@ -113,14 +113,15 @@ class DiscordController (
                 "grant_type" to listOf("authorization_code"),
                 "code" to listOf(code),
                 "redirect_uri" to listOf(discordConfig.callbackUrl),
-            ))
+            )
+        )
 
         val tokenResponse = restTemplate.exchange<DiscordTokenResponse>(
             url = "https://discordapp.com/api/oauth2/token",
             method = HttpMethod.POST,
             requestEntity = HttpEntity(data, httpHeaders)
         )
-        if (!tokenResponse.statusCode.is2xxSuccessful){
+        if (!tokenResponse.statusCode.is2xxSuccessful) {
             throw IllegalStateException("Discord token exchange failed!")
         }
         return tokenResponse.body!!
