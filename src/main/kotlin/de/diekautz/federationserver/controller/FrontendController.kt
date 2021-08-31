@@ -84,6 +84,9 @@ class FrontendController(
         if (request.getParameter("saved") != null){
             model["success"] = "Federation Address updated successfully!"
         }
+        if (request.getParameter("error") != null){
+            model["error"] = request.getParameter("error")
+        }
         return "dashboard"
     }
 }
