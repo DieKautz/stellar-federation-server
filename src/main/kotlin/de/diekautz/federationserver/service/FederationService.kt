@@ -48,7 +48,7 @@ class FederationService(private val dataSource: FederationAddressDataSource) {
         if (!address.stellarAddress.isValidFedAddress() || !address.accountId.isValidPubKey()) {
             throw IllegalArgumentException("Address or account id invalid!")
         }
-        if (address.memoType == MemoType.NONE) {
+        if (address.memoType != MemoType.NONE) {
             if (address.memo == null) {
                 throw IllegalArgumentException("Memo Type has to match content!")
             } else if (address.memoType == MemoType.HASH && !address.memo.matches(Regex("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$"))) {
