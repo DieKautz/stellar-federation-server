@@ -75,7 +75,7 @@ class DiscordController(
 
         val accountID = request.getParameter("account_id")
         val memoType = MemoType.valueOf(request.getParameter("memo_type"))
-        val memo = request.getParameter("memo")
+        val memo = if(memoType!=MemoType.NONE) request.getParameter("memo") else null
 
         val federationAddress = FederationAddress(stellarAddress, accountID, memoType, memo)
 
