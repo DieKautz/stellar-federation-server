@@ -49,10 +49,10 @@ class FederationService(private val dataSource: FederationAddressDataSource) {
             throw IllegalArgumentException("Address or account id invalid!")
         }
         if (address.memoType != MemoType.NONE) {
-            if (address.memo == null) {
-                throw IllegalArgumentException("Memo Type has to match content!")
+            if (address.memo.isNullOrBlank()) {
+                throw IllegalArgumentException("Memo may not be empty when type is specified!")
             } else if (address.memoType == MemoType.HASH && !address.memo.matches(Regex("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$"))) {
-                throw IllegalArgumentException("Memo hash is invalid!")
+                throw IllegalArgumentException("Memo hash is invalid! (expected base64)")
             }
         } else {
             if (address.memo != null) {
