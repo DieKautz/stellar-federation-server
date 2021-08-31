@@ -8,4 +8,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class DiscordClientConfiguration (
     val id: String,
     val secret: String,
+    val callbackUrl: String,
 )

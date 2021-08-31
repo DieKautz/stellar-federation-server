@@ -30,11 +30,10 @@ class DiscordController (
     private val fedConfig: FederationConfiguration,
     @Autowired private val restTemplate: RestTemplate
     ) {
-    private val callbackUri = "https://${fedConfig.domain}/api/discord/callback"
 
     @GetMapping("/login")
     fun redirectDiscordLogin() =
-        RedirectView("https://discordapp.com/api/oauth2/authorize?client_id=${discordConfig.id}&scope=identify&response_type=code&redirect_uri=${callbackUri}")
+        RedirectView("https://discordapp.com/api/oauth2/authorize?client_id=${discordConfig.id}&scope=identify&response_type=code&redirect_uri=${discordConfig.callbackUrl}")
 
     @GetMapping("/callback")
     fun handleCallback(request: HttpServletRequest, session: HttpSession): RedirectView {
@@ -113,7 +112,7 @@ class DiscordController (
                 "client_secret" to listOf(discordConfig.secret),
                 "grant_type" to listOf("authorization_code"),
                 "code" to listOf(code),
-                "redirect_uri" to listOf(callbackUri),
+                "redirect_uri" to listOf(discordConfig.callbackUrl),
             ))
 
         val tokenResponse = restTemplate.exchange<DiscordTokenResponse>(

@@ -2,6 +2,7 @@ server.port: 8080
 oauth2.discord.client:
     id: "<client id goes here>"
     secret: "<secret client key here>"
+    callbackUrl: "https://ssfs.diekautz.dev/api/discord/callback"
 stellar.federation.domain: "ssfs.diekautz.dev"
 
 ### DATABASE ###
