@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.diekautz"
-version = "0.1.4-SNAPSHOT"
+version = "0.1.5-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
