@@ -1,10 +1,12 @@
 package de.diekautz.federationserver.controller
 
 import de.diekautz.federationserver.config.FederationConfiguration
-import de.diekautz.federationserver.controller.SessionType.*
+import de.diekautz.federationserver.controller.SessionType.DISCORD
+import de.diekautz.federationserver.controller.SessionType.NONE
 import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
 import de.diekautz.federationserver.datasource.FederationAddressDataSource
 import de.diekautz.federationserver.model.FederationAddress
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
@@ -20,6 +22,7 @@ class FrontendController(
     private val dataSource: FederationAddressDataSource,
     private val fedConfig: FederationConfiguration
 ) {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @ExceptionHandler(value = [IllegalArgumentException::class, IllegalStateException::class])
     fun handleError(e: IllegalArgumentException, model: Model): String {
@@ -49,6 +52,7 @@ class FrontendController(
 
     @GetMapping("/logout")
     fun logoutSession(model: Model, session: HttpSession): String {
+        log.debug("Logout requested for session: ${session.id}")
         session.invalidate()
         model["success"] = "Log out successful!"
         return "redirect:/login"
@@ -57,7 +61,6 @@ class FrontendController(
     @GetMapping("/dashboard")
     fun serveDashboard(model: Model, session: HttpSession, request: HttpServletRequest): String {
         if (session.getAttribute("id") == null || session.getAttribute("type") as SessionType == NONE) {
-            println("redirecting back to login ${session.getAttribute("id")} #### ${session.getAttribute("type")}")
             return "redirect:/login"
         }
         model["sessionId"] = session.getAttribute("id")

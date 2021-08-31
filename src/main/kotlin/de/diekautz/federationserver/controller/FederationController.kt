@@ -2,17 +2,19 @@ package de.diekautz.federationserver.controller
 
 import de.diekautz.federationserver.model.FederationAddress
 import de.diekautz.federationserver.service.FederationService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
-import java.io.File
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping
 class FederationController(private val service: FederationService) {
     private val tomlContent = this.javaClass.classLoader.getResource("stellar.toml").readText()
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @ExceptionHandler(NoSuchElementException::class)
     fun handleNotFound(e: NoSuchElementException): ResponseEntity<String> =
@@ -27,9 +29,10 @@ class FederationController(private val service: FederationService) {
         ResponseEntity("{\"error\":\"${e.message}\"}", HttpStatus.BAD_REQUEST)
 
     @GetMapping("/federation")
-    fun getFedAddr(@RequestParam("type") type: String, @RequestParam("q") query: String, response: HttpServletResponse): FederationAddress {
+    fun getFedAddr(@RequestParam("type") type: String, @RequestParam("q") query: String, response: HttpServletResponse, request: HttpServletRequest): FederationAddress {
         when(type) {
             "name" -> {
+                log.info("Got name-type query for '$query' from ${request.remoteAddr}")
                 response.setHeader("Access-Control-Allow-Origin", "*")
                 return service.getByFedAddress(query)
             }

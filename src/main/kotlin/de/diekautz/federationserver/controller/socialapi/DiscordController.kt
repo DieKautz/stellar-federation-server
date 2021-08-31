@@ -8,6 +8,7 @@ import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
 import de.diekautz.federationserver.model.FederationAddress
 import de.diekautz.federationserver.model.MemoType
 import de.diekautz.federationserver.service.FederationService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
 import org.springframework.util.LinkedMultiValueMap
@@ -30,6 +31,7 @@ class DiscordController(
     private val fedConfig: FederationConfiguration,
     @Autowired private val restTemplate: RestTemplate
 ) {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("/login")
     fun redirectDiscordLogin() =
@@ -55,6 +57,7 @@ class DiscordController(
                 requestEntity = HttpEntity("", httpHeaders)
             )
             session.setAttribute("discordUser", user.body!!)
+            log.debug("Authenticated Discord user ${user.body?.username}#${user.body?.discriminator} (${user.body?.id})")
         } catch (ex: Exception) {
             session.invalidate()
             throw IllegalStateException("Discord Authorization failed!")
@@ -78,7 +81,7 @@ class DiscordController(
 
         service.updateFedAddress(federationAddress)
 
-        println("Updating $stellarAddress")
+        log.debug("Updating discord fed address for ${user.username}#${user.discriminator} (${user.id}) to $federationAddress")
 
         return RedirectView("/dashboard?saved")
     }
@@ -88,7 +91,8 @@ class DiscordController(
         val user = session.getAttribute("discordUser") as DiscordUser
         val fedAddress = "${user.username}#${user.discriminator}*${fedConfig.domain}"
         service.deleteFedAddress(fedAddress)
-        println("Deleting $fedAddress")
+
+        log.debug("Deleting discord fed address for ${user.username}#${user.discriminator} (${user.id})")
 
         session.removeAttribute("discordUser")
         session.removeAttribute("id")
