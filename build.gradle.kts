@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "de.diekautz"
-version = "0.1.5-SNAPSHOT"
+version = "0.1.5"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.springframework.boot:spring-boot-starter-web:2.5.4")
