@@ -37,6 +37,12 @@ class DiscordController(
         return RedirectView("/dashboard")
     }
 
+    @ExceptionHandler(Exception::class)
+    fun handleOtherEx(e: Exception): RedirectView {
+        log.error("An unhandled error occurred! ${e.message}\n${e.stackTraceToString()}")
+        return RedirectView("/")
+    }
+
     @GetMapping("/login")
     fun redirectDiscordLogin() =
         RedirectView("https://discordapp.com/api/oauth2/authorize?client_id=${discordConfig.id}&scope=identify&response_type=code&redirect_uri=${discordConfig.callbackUrl}")

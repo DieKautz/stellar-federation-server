@@ -31,6 +31,12 @@ class FrontendController(
         return "login"
     }
 
+    @ExceptionHandler(Exception::class)
+    fun handleOtherEx(e: Exception): RedirectView {
+        log.error("An unhandled error occurred! ${e.message}\n${e.stackTraceToString()}")
+        return RedirectView("/")
+    }
+
     @GetMapping("/")
     fun serveHomePage(request: HttpServletRequest, session: HttpSession): RedirectView {
 

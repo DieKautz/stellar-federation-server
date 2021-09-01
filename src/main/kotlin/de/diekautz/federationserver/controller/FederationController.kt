@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.view.RedirectView
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -23,8 +24,14 @@ class FederationController(
     fun handleNotFound(e: NoSuchElementException) = FederationError(e.message ?: "Error")
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = [IllegalArgumentException::class, MissingServletRequestParameterException::class])
-    fun handleBadRequest(e: IllegalArgumentException) = FederationError(e.message ?: "Error")
+    @ExceptionHandler(value = [IllegalStateException::class, IllegalArgumentException::class, MissingServletRequestParameterException::class])
+    fun handleBadRequest(e: Exception) = FederationError(e.message ?: "Error")
+
+    @ExceptionHandler(Exception::class)
+    fun handleOtherEx(e: Exception): RedirectView {
+        log.error("An unhandled error occurred! ${e.message}\n${e.stackTraceToString()}")
+        return RedirectView("/")
+    }
 
     @GetMapping("/federation")
     fun getFedAddr(@RequestParam("type") type: String, @RequestParam("q") query: String, response: HttpServletResponse): FederationAddress {
