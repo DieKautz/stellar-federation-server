@@ -15,13 +15,27 @@ If you want to test out the service on you own infrastructure you can
 
 In addition to that you have to configure two things:
 
- 1. customize the application.yml with your domain and developer credentials and put it in the same folder as the jar.
+ 1. customize the `application.yml` with your domain and developer credentials and put it in the same folder as the jar.
  2. run a MySQL server on the same host with this default configuration
     - port: `3306`
     - username: `fed_admin`
     - password: `secret`
     - database: `fed_address`
     - _Note that this can be changed by adjusting your `application.yml`_
+
+## application.yml
+Providing the application with an `application.yml` in the root directory, will let you customize all sorts of attributes.
+
+Namely:
+ - Discord Client Id/secret
+ - stellar federation domain (`stellar.federation.domain`)
+ - optional:
+   - global fields for stellar toml under /.well-known/stellar.toml (`stellar.toml.general`)
+   - server http port (`server.port`)
+   - database connection
+     - `spring.datasource.url`
+     - `spring.datasource.username`
+     - `spring.datasource.password`
 
 # License
 This project can be built upon under the conditions of the [MIT License](https://github.com/DieKautz/stellar-federation-server/blob/master/LICENSE).
