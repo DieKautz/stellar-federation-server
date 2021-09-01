@@ -47,9 +47,9 @@ class FederationController(
             return
         }
 
-        val sb = StringBuilder("# Stellar Social Federation Service\n")
+        val sb = StringBuilder("# Stellar Social Federation Service\n\n")
         for((key, value) in tomlConfig.general) {
-            sb.append("$key=$value\n")
+            sb.append("$key=\"$value\"\n")
         }
 
         response.setHeader("Access-Control-Allow-Origin", "*")
