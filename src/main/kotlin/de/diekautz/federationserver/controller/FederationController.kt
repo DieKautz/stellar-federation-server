@@ -43,7 +43,6 @@ class FederationController(
         when(type) {
             "name" -> {
                 log.info("Got name-type query for '$query'")
-                response.setHeader("Access-Control-Allow-Origin", "*")
                 return service.getByFedAddress(query)
             }
             else -> {
