@@ -18,7 +18,6 @@ class CorsFilter: Filter {
         request as HttpServletRequest
         response as HttpServletResponse
 
-        log.debug("adding cors to ${request.requestURI}")
         response.setHeader("Access-Control-Allow-Origin", "*")
 
 
