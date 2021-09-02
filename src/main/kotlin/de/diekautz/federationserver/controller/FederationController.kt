@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.MethodNotAllowedException
 import org.springframework.web.servlet.view.RedirectView
 import javax.servlet.http.HttpServletResponse
 
@@ -26,6 +27,10 @@ class FederationController(
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = [IllegalStateException::class, IllegalArgumentException::class, MissingServletRequestParameterException::class])
     fun handleBadRequest(e: Exception) = FederationError(e.message ?: "Error")
+
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(MethodNotAllowedException::class)
+    fun handleMethodNotAllowed(e: MethodNotAllowedException) = FederationError(e.message)
 
     @ExceptionHandler(Exception::class)
     fun handleOtherEx(e: Exception): RedirectView {
