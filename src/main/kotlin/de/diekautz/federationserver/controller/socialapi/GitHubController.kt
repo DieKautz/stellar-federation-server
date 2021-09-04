@@ -1,10 +1,10 @@
 package de.diekautz.federationserver.controller.socialapi
 
-import de.diekautz.federationserver.config.DiscordClientConfiguration
 import de.diekautz.federationserver.config.FederationConfiguration
+import de.diekautz.federationserver.config.GitHubClientConfiguration
 import de.diekautz.federationserver.controller.SessionType
-import de.diekautz.federationserver.controller.socialapi.dto.DiscordTokenResponse
-import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
+import de.diekautz.federationserver.controller.socialapi.dto.GitHubTokenResponse
+import de.diekautz.federationserver.controller.socialapi.dto.GitHubUser
 import de.diekautz.federationserver.model.FederationAddress
 import de.diekautz.federationserver.model.MemoType
 import de.diekautz.federationserver.model.UserSession
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession
 @RestController
 @RequestMapping("/api/github")
 class GitHubController(
-    private val discordConfig: DiscordClientConfiguration,
+    private val githubConfig: GitHubClientConfiguration,
     private val service: FederationService,
     private val fedConfig: FederationConfiguration,
     @Autowired private val restTemplate: RestTemplate
@@ -45,35 +45,35 @@ class GitHubController(
     }
 
     @GetMapping("/login")
-    fun redirectDiscordLogin() =
-        RedirectView("https://discordapp.com/api/oauth2/authorize?client_id=${discordConfig.id}&scope=identify&response_type=code&redirect_uri=${discordConfig.callbackUrl}")
+    fun redirectDiscordLogin(session: HttpSession) =
+        RedirectView("https://github.com/login/oauth/authorize?client_id=${githubConfig.id}&redirect_uri=${githubConfig.callbackUrl}&state=${session.id}&scope=read:user")
 
     @GetMapping("/callback")
     fun handleCallback(request: HttpServletRequest, session: HttpSession, redirAttr: RedirectAttributes): RedirectView {
         val userSession = session.getAttribute("user") as UserSession? ?: return RedirectView("/login")
-        if (request.getParameter("code") == null) {
-            redirAttr.addFlashAttribute("error", "Discord Authorization failed!")
+        if (request.getParameter("code") == null || request.getParameter("state") != session.id) {
+            redirAttr.addFlashAttribute("error", "GitHub Authorization failed!")
             return RedirectView("/login")
         }
         val code = request.getParameter("code")!!
 
         try {
             val tokenResponse = exchangeCode(code)
-            userSession.sessionType = SessionType.DISCORD
+            userSession.sessionType = SessionType.GITHUB
 
             val httpHeaders = HttpHeaders()
             httpHeaders.setBearerAuth(tokenResponse.accessToken)
-            val user = restTemplate.exchange<DiscordUser>(
-                url = "https://discordapp.com/api/users/@me",
+            val user = restTemplate.exchange<GitHubUser>(
+                url = "https://api.github.com/user",
                 method = HttpMethod.GET,
                 requestEntity = HttpEntity("", httpHeaders)
             )
-            userSession.username = "${user.body!!.username}#${user.body!!.discriminator}"
-            log.debug("Authenticated Discord user ${userSession.username} (id:${user.body?.id}) SESSION:${userSession.id}")
+            userSession.username = user.body!!.username
+            log.debug("Authenticated GitHub user ${userSession.username} (id:${user.body?.id}) SESSION:${userSession.id}")
         } catch (ex: Exception) {
             session.setAttribute("user", null)
             session.invalidate()
-            redirAttr.addFlashAttribute("error", "Discord Authorization failed!")
+            redirAttr.addFlashAttribute("error", "GitHub Authorization failed!")
             return RedirectView("/login")
         }
         return RedirectView("/dashboard")
@@ -93,9 +93,9 @@ class GitHubController(
 
         service.updateFedAddress(federationAddress)
 
-        log.debug("Updating discord fed address for ${userSession.username} to $federationAddress")
+        log.debug("Updating github fed address for ${userSession.username} to $federationAddress")
 
-        redirAttr.addFlashAttribute("success", "Discord Federation Address saved!")
+        redirAttr.addFlashAttribute("success", "GitHub Federation Address saved!")
         return RedirectView("/dashboard")
     }
 
@@ -106,38 +106,38 @@ class GitHubController(
         val stellarAddress = "${userSession.username}*${userSession.sessionType.subDomain}.${fedConfig.domain}"
         service.deleteFedAddress(stellarAddress)
 
-        log.debug("Deleting discord fed address for ${userSession.username}")
+        log.debug("Deleting github fed address for ${userSession.username}")
 
         session.setAttribute("user", null)
         session.invalidate()
         return ResponseEntity.ok("deleted")
     }
 
-    private fun exchangeCode(code: String): DiscordTokenResponse {
-        val credsString = "${discordConfig.id}:${discordConfig.secret}"
+    private fun exchangeCode(code: String): GitHubTokenResponse {
+        val credsString = "${githubConfig.id}:${githubConfig.secret}"
         val creds = Base64.getEncoder().encodeToString(credsString.toByteArray())
 
         val httpHeaders = HttpHeaders()
         httpHeaders.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        httpHeaders.accept = listOf(MediaType.APPLICATION_JSON)
         httpHeaders.setBasicAuth(creds)
 
         val data = LinkedMultiValueMap(
             mapOf(
-                "client_id" to listOf(discordConfig.id),
-                "client_secret" to listOf(discordConfig.secret),
-                "grant_type" to listOf("authorization_code"),
+                "client_id" to listOf(githubConfig.id),
+                "client_secret" to listOf(githubConfig.secret),
                 "code" to listOf(code),
-                "redirect_uri" to listOf(discordConfig.callbackUrl),
+                "redirect_uri" to listOf(githubConfig.callbackUrl),
             )
         )
 
-        val tokenResponse = restTemplate.exchange<DiscordTokenResponse>(
-            url = "https://discordapp.com/api/oauth2/token",
+        val tokenResponse = restTemplate.exchange<GitHubTokenResponse>(
+            url = "https://github.com/login/oauth/access_token",
             method = HttpMethod.POST,
             requestEntity = HttpEntity(data, httpHeaders)
         )
         if (!tokenResponse.statusCode.is2xxSuccessful) {
-            throw IllegalStateException("Discord token exchange failed!")
+            throw IllegalStateException("Github token exchange failed!")
         }
         return tokenResponse.body!!
     }

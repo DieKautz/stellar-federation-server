@@ -64,6 +64,7 @@ class FrontendController(
     @GetMapping("/logout")
     fun logoutSession(model: Model, session: HttpSession): String {
         log.debug("Logout requested for session: ${session.id}")
+        session.setAttribute("user", null)
         session.invalidate()
         model["success"] = "Log out successful!"
         return "login"

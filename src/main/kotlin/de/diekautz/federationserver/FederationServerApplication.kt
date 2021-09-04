@@ -2,6 +2,7 @@ package de.diekautz.federationserver
 
 import de.diekautz.federationserver.config.DiscordClientConfiguration
 import de.diekautz.federationserver.config.FederationConfiguration
+import de.diekautz.federationserver.config.GitHubClientConfiguration
 import de.diekautz.federationserver.config.StellarTomlConfiguration
 import de.diekautz.federationserver.controller.filter.CorsFilter
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.web.client.RestTemplate
 
 @SpringBootApplication
-@EnableConfigurationProperties(value = [DiscordClientConfiguration::class, FederationConfiguration::class, StellarTomlConfiguration::class])
+@EnableConfigurationProperties(value = [GitHubClientConfiguration::class, DiscordClientConfiguration::class, FederationConfiguration::class, StellarTomlConfiguration::class])
 class FederationServerApplication {
 
     @Bean
