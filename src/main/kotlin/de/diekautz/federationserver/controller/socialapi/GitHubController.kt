@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
 
 @RestController
-@RequestMapping("/api/discord")
-class DiscordController(
+@RequestMapping("/api/github")
+class GitHubController(
     private val discordConfig: DiscordClientConfiguration,
     private val service: FederationService,
     private val fedConfig: FederationConfiguration,

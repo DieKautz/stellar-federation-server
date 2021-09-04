@@ -1,11 +1,10 @@
 package de.diekautz.federationserver.controller
 
 import de.diekautz.federationserver.config.FederationConfiguration
-import de.diekautz.federationserver.controller.SessionType.DISCORD
-import de.diekautz.federationserver.controller.SessionType.NONE
-import de.diekautz.federationserver.controller.socialapi.dto.DiscordUser
+import de.diekautz.federationserver.controller.SessionType.*
 import de.diekautz.federationserver.datasource.FederationAddressDataSource
 import de.diekautz.federationserver.model.FederationAddress
+import de.diekautz.federationserver.model.UserSession
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import org.springframework.web.servlet.view.RedirectView
-import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpSession
 
@@ -48,10 +46,10 @@ class FrontendController(
 
     @GetMapping("/login")
     fun serveLoginPage(model: Model, session: HttpSession, request: HttpServletRequest, redirAttr: RedirectAttributes): String {
-        if (session.getAttribute("id") == null) {
-            session.setAttribute("id", UUID.randomUUID().toString())
-            session.setAttribute("type", NONE)
-        } else if (session.getAttribute("type") as SessionType != NONE) {
+        val userSession = session.getAttribute("user") as UserSession?
+        if(userSession == null){
+            session.setAttribute("user", UserSession())
+        } else if (userSession.sessionType != NONE) {
             return "redirect:/dashboard"
         }
         if (redirAttr.containsAttribute("error")) {
@@ -73,24 +71,26 @@ class FrontendController(
 
     @GetMapping("/dashboard")
     fun serveDashboard(model: Model, session: HttpSession, request: HttpServletRequest, redirAttr: RedirectAttributes): String {
-        if (session.getAttribute("id") == null || session.getAttribute("type") as SessionType == NONE) {
+        val userSession = session.getAttribute("user") as UserSession?
+        if (userSession == null || userSession.sessionType == NONE) {
             return "redirect:/login"
         }
-        model["sessionId"] = session.getAttribute("id")
-        model["type"] = session.getAttribute("type").toString()
-        val discordUser = session.getAttribute("discordUser") as DiscordUser
-        val username = "${discordUser.username}#${discordUser.discriminator}"
-        model["socialName"] = username
+        model["sessionId"] = userSession.id.toString()
+        model["type"] = userSession.sessionType
+        model["socialName"] = userSession.username
 
-        when (session.getAttribute("type") as SessionType) {
+        when (userSession.sessionType) {
             DISCORD -> {
                 model["endpoint"] = "/api/discord"
             }
+            GITHUB -> {
+                model["endpoint"] = "/api/github"
+            }
             else -> {}
         }
-        var fedAddress = dataSource.findAddress("${username}*${fedConfig.domain}")
+        var fedAddress = dataSource.findAddress("${userSession.username}*${userSession.sessionType.subDomain}.${fedConfig.domain}")
         if (fedAddress == null) {
-            fedAddress = FederationAddress("${username}*${fedConfig.domain}", "")
+            fedAddress = FederationAddress("${userSession.username}*${userSession.sessionType.subDomain}.${fedConfig.domain}", "")
         }
         model["fedAddress"] = fedAddress
 
