@@ -1,5 +1,5 @@
 server.port: 8080
-oauth2.discord.client:
+oauth2:
     discord.client:
         id: "<client id goes here>"
         secret: "<secret client key here>"
