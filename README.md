@@ -32,7 +32,9 @@ In addition to that you have to configure two things:
 Providing the application with an `application.yml` in the root directory, will let you customize all sorts of attributes.
 
 Namely:
- - Discord Client Id/secret
+ - OAuth2 Client id/secret/callbackUrl
+   - Discord  `oauth2.discord.client.(id|secret|callbackUrl)`
+   - GitHub  `oauth2.github.client.(id|secret|callbackUrl)`
  - stellar federation domain (`stellar.federation.domain`)
  - optional:
    - global fields for stellar toml under /.well-known/stellar.toml (`stellar.toml.general`)
