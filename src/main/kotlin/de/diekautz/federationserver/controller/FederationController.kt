@@ -43,11 +43,15 @@ class FederationController(
         when(type.lowercase()) {
             "name" -> {
                 log.info("Got name-type query for '$query'")
-                return service.getByFedAddress(query)
+                val federationAddress = service.getByFedAddress(query)
+                log.info("Resolved '$query' to ${federationAddress.accountId}")
+                return federationAddress
             }
             "id" -> {
-                log.info("Got id-type query for '$query")
-                return service.getByAccountID(query)
+                log.info("Got id-type query for '$query'")
+                val federationAddress = service.getByAccountID(query)
+                log.info("Resolved '$query' to ${federationAddress.stellarAddress}")
+                return federationAddress
             }
             else -> {
                 throw IllegalArgumentException("Request type '$type' not supported.")

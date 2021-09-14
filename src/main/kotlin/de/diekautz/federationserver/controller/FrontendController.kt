@@ -63,7 +63,11 @@ class FrontendController(
 
     @GetMapping("/logout")
     fun logoutSession(model: Model, session: HttpSession): String {
-        log.debug("Logout requested for session: ${session.id}")
+        val userSession = session.getAttribute("user") as UserSession?
+        if (userSession == null || userSession.sessionType == NONE) {
+            return "redirect:/login"
+        }
+        log.debug("Logout requested for session: ${userSession.id}")
         session.setAttribute("user", null)
         session.invalidate()
         model["success"] = "Log out successful!"
