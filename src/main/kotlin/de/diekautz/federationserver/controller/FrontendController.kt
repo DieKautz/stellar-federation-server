@@ -91,6 +91,9 @@ class FrontendController(
             GITHUB -> {
                 model["endpoint"] = "/api/github"
             }
+            TWITTER -> {
+                model["endpoint"] = "/api/twitter"
+            }
             else -> {}
         }
         var fedAddress = dataSource.findAddress("${userSession.username}*${userSession.sessionType.subDomain}.${fedConfig.domain}")

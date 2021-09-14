@@ -8,6 +8,10 @@ oauth2:
         id: "<client id goes here>"
         secret: "<secret client key here>"
         callbackUrl: "https://ssfs.diekautz.dev/api/discord/callback"
+    twitter.client:
+        id: "<client id goes here>"
+        secret: "<secret client key here>"
+        callbackUrl: "https://ssfs.diekautz.dev/api/twitter/callback"
 stellar:
     federation.domain: "diekautz.dev"
     toml:
