@@ -22,6 +22,10 @@ class MockFederationAddressDataSource : FederationAddressDataSource {
         return accs.firstOrNull { it.stellarAddress == stellarAddress }
     }
 
+    override fun findByAccId(accountId: String): FederationAddress? {
+        return accs.firstOrNull { it.accountId == accountId }
+    }
+
     override fun createAddr(address: FederationAddress): FederationAddress {
         accs.add(address)
         return address

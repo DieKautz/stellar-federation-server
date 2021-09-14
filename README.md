@@ -11,7 +11,7 @@ It is used for linking an existing social-media-account provider like Discord wi
 An image of the latest release is deployed at [ssfs.diekautz.dev](https://ssfs.diekautz.dev) for testing purposes where you can find a simple UI to manage and delete your federated address for your social-media-account. Please note that currently just Discord and GitHub is implemented for authentication.
 
 ## SEP-0002
-The federetion end of the service currently implements a fully functional resolver (request type `name`) in accordance with [the spec](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0002.md). You can query it at: `https://ssfs.diekautz.dev/federation`
+The federetion end of the service currently implements a fully functional resolver (supporting queries of type `name` and `id`) in accordance with [the spec](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0002.md). You can query it at: `https://ssfs.diekautz.dev/federation`
 
 # Deployment
 If you want to test out the service on you own infrastructure you can

@@ -25,6 +25,10 @@ class MySQLFedAddrDataSource(
         } else null
     }
 
+    override fun findByAccId(accountId: String): FederationAddress? {
+        return sqlRepository.findDistinctFirstByAccountIdEquals(accountId)?.toFederationAddress()
+    }
+
     override fun createAddr(address: FederationAddress): FederationAddress {
         val saved = sqlRepository.save(FederationAddressEntity(address))
         return saved.toFederationAddress()

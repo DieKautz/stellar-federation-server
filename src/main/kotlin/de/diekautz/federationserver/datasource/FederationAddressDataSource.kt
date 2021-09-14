@@ -8,6 +8,8 @@ interface FederationAddressDataSource {
 
     fun findAddress(stellarAddress: String): FederationAddress?
 
+    fun findByAccId(accountId: String): FederationAddress?
+
     fun createAddr(address: FederationAddress): FederationAddress
 
     fun updateAddr(address: FederationAddress): Boolean

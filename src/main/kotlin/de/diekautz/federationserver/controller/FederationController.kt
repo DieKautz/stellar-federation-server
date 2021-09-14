@@ -40,10 +40,14 @@ class FederationController(
 
     @GetMapping("/federation")
     fun getFedAddr(@RequestParam("type") type: String, @RequestParam("q") query: String, response: HttpServletResponse): FederationAddress {
-        when(type) {
+        when(type.lowercase()) {
             "name" -> {
                 log.info("Got name-type query for '$query'")
                 return service.getByFedAddress(query)
+            }
+            "id" -> {
+                log.info("Got id-type query for '$query")
+                return service.getByAccountID(query)
             }
             else -> {
                 throw IllegalArgumentException("Request type '$type' not supported.")

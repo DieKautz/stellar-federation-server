@@ -4,4 +4,7 @@ import de.diekautz.federationserver.model.FederationAddressEntity
 import org.springframework.data.repository.CrudRepository
 
 interface MySQLRepository: CrudRepository<FederationAddressEntity, String> {
+
+    fun findDistinctFirstByAccountIdEquals(accountId: String): FederationAddressEntity?
+
 }

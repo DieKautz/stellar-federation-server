@@ -19,6 +19,10 @@ class FederationService(private val dataSource: FederationAddressDataSource) {
         return dataSource.findAddress(stellarAddress) ?: throw NoSuchElementException("Address was not found!")
     }
 
+    fun getByAccountID(accountId: String): FederationAddress {
+        return dataSource.findByAccId(accountId) ?: throw NoSuchElementException("Account Id was not found!")
+    }
+
     fun createFedAddress(address: FederationAddress): FederationAddress {
         validateAddress(address)
 
